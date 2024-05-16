@@ -2,6 +2,16 @@
 #include <cstring>
 #include <ctime>
 
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_native_dialog.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+
+
 using namespace std;
 
 struct T_Vehiculo {
@@ -274,6 +284,30 @@ int main() {
 
     int opcion;
     Piso* parqueo = nullptr;
+    
+    if (!al_init()) {
+        al_show_native_message_box(NULL, "Ventana Emergente", "Error", "No se puede inicializar Allegro", NULL, NULL);
+        return -1;
+    }
+
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_init_image_addon();
+    al_init_primitives_addon();
+    al_install_keyboard();
+    al_install_audio();
+    al_init_acodec_addon();
+    al_reserve_samples(7);
+    al_install_mouse();
+    ALLEGRO_MONITOR_INFO monitor;
+    al_get_monitor_info(0, &monitor);//Se obtiene la información del monitor como su resolución mediante diferencia de puntos finales e iniciales
+    const int RX = monitor.x2 - monitor.x1 - 500;
+    const int RY = monitor.y2 - monitor.y1 - 500;
+
+
+    ALLEGRO_DISPLAY* pantalla = al_create_display(RX, RY);
+
+    al_set_window_title(pantalla, "Simulador de Parking");//Se le pone un título a la ventana
 
     do {
         cout << "\nMenu:" << endl;
