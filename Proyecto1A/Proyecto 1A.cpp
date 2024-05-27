@@ -2,6 +2,8 @@
 #include <cstring>
 #include <ctime>
 #include <windows.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_ttf.h>
@@ -490,11 +492,13 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
             {
                 if (eventos.mouse.button & 1) {
                     hecho = false;
+                    al_destroy_display(pantalla);
                 }
             }
         }
         if (eventos.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (eventos.keyboard.keycode == ALLEGRO_KEY_A) {
+                srand(time(NULL));
                 int placa = rand() % 9999 + 1000;
                 string placaStr = to_string(placa);
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), 950, 100, 0, "Llega al parqueo el carro");
