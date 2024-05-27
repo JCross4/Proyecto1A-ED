@@ -1,3 +1,9 @@
+//Proyecto 1A
+//Estructuras de Datos
+//José Calderón Barquero y José Julián Gómez
+
+
+
 #include <iostream>
 #include <cstring>
 #include <ctime>
@@ -201,6 +207,7 @@ void AgregarInicioPiso(T_Vehiculo*& lista, const char* identificacion, float pes
     lista = nuevoVehiculo;
 }
 
+//Recibe los datos de un carro y lo añade a un parqueo
 void AgregarVehiculo(Piso*& parqueo, const char* tipo, const char* identificacion, float peso, float tamano) {
     Piso* pisoActual = parqueo;
     while (pisoActual != nullptr) {
@@ -244,6 +251,7 @@ Piso* CrearParqueo(int pisosMotosBicicletas, int pisosAutos4x4, int pisosCamione
     return parqueo;
 }
 
+//Recibe los datos de una placa e intenta eliminarlo si existe
 void SacarVehiculo(Piso* parqueo, const char* identificacion) {
     Piso* pisoActual = parqueo;
     while (pisoActual != nullptr) {
@@ -273,7 +281,6 @@ void SacarVehiculo(Piso* parqueo, const char* identificacion) {
     cout << "No se encontró un vehículo con la placa " << identificacion << endl;
 }
 
-
 void MostrarTiposVehiculos() {
     cout << "Tipos de vehículos que admite el parqueo:" << endl;
     cout << "moto_bicicleta" << endl;
@@ -282,13 +289,17 @@ void MostrarTiposVehiculos() {
 }
 
 //Funciones Allegro simulación
+
+//Función que dibuja los espacios del parqueo en la pantalla
 void dibujarParqueo(int modo, int rx, int ry, int espacios, int plantas) {
     float x1 = 1, x2 = x1 + rx, y1 = 60, y2 = y1 + ry, anchoCelda = rx, altoCelda = ry;
+    //Según el tipo de parqueo
     switch (modo)
     {
     case 1:
         anchoCelda = anchoCelda / espacios;
         x2 = x1 + anchoCelda;
+        //Recorre la cantidad de espacios y dibuja rectángulos
         for (int i = 0; i < espacios; i++)
         {   
             al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(250, 0, 0), 0);
@@ -336,6 +347,8 @@ void dibujarParqueo(int modo, int rx, int ry, int espacios, int plantas) {
     
 }
 
+
+//Función que dibuja los vehiculos en la pantalla
 void dibujarVehiculos(Piso* parqueo, int modo, int rx, int ry, int espacios, int plantas, ALLEGRO_BITMAP* carro) {
     
     if (parqueo->listaVehiculos == NULL) {
@@ -347,12 +360,13 @@ void dibujarVehiculos(Piso* parqueo, int modo, int rx, int ry, int espacios, int
     T_Vehiculo* carroActual = parqueo->listaVehiculos;
     int i = 0, j = 0;
 
+    //Según el tipo de parqueo
     switch (modo)
     {
     case 1:
         anchoCarro = anchoCarro / espacios;
         x2 = x1 + anchoCarro;
-        
+            //Si hay un carro y está dentro de los espacios se dibuja un carro
             while (carroActual && i < espacios){
                 al_draw_scaled_bitmap(carro, 0, 0, 1000, 1000, x1, y1, anchoCarro, altoCarro, 0);
                 x1 += anchoCarro; x2 += anchoCarro;
@@ -409,6 +423,7 @@ void dibujarVehiculos(Piso* parqueo, int modo, int rx, int ry, int espacios, int
 
 //Funciones Allegro
 void simulacion(int modo, int plantas = 1, int espacios=1) {
+    //Se inicializa la estructura del parqueo
     InicializarParqueo();
     Piso* parqueo = nullptr;
     if (modo == 1) {
@@ -420,7 +435,7 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
     else {
         parqueo = CrearParqueo(plantas, 0, 0);
     }
-    
+    //Se crea la pantalla
     if (!al_init()) {
         al_show_native_message_box(NULL, "Ventana Emergente", "Error", "No se puede inicializar Allegro", NULL, NULL);
         return;
@@ -454,9 +469,6 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
     int mousey = 0;
     int a = 0;
     int inicio = 0;
-    const int maxFrame = 1;
-    int frameactual = 0;
-    int contadorDeFrames = 0;
     int alturaDeFrame = 1080;
     int AnchoDeFrame = 1920;
     int cantidadPlantas = plantas;
@@ -481,7 +493,7 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
             if (eventos.timer.source == timer1)
             {
                 
-                //Se dibuja el fondo animado y las opciones del menú en el display
+                //Se dibujan el parqueo y los vehículos
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 dibujarParqueo(modo, RX - 300, RY - 200, espacios, plantas);
                 dibujarVehiculos(parqueo, modo, RX - 300, RY - 200, espacios, plantas, carro);
@@ -500,6 +512,7 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
             }
         }
         if (eventos.type == ALLEGRO_EVENT_KEY_DOWN) {
+            //Si se presiona la tecla A se genera un carro aleatorio y se añade al parqueo
             if (eventos.keyboard.keycode == ALLEGRO_KEY_A) {
                 srand(time(NULL));
                 int placa = rand() % 9999 + 1000;
@@ -513,15 +526,16 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
                 Sleep(2000);
                
             }
+            //Si se presiona la tecla S se genera un numero de placa aleatorio y se intenta sacar del parqueo
             if (eventos.keyboard.keycode == ALLEGRO_KEY_S) {
                 srand(time(NULL));
                 int placa = rand() % 9999 + 1000;
                 string placaStr = to_string(placa);
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), 950, 100, 0, "Se solicita sacar el carro");
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), 950, 125, 0, "con placa: ");
-                al_draw_text(fuente2, al_map_rgb(250, 250, 250), 1060, 125, 0, "1041");
+                al_draw_text(fuente2, al_map_rgb(250, 250, 250), 1060, 125, 0, placaStr.c_str());
                 al_flip_display();
-                SacarVehiculo(parqueo, "1041");
+                SacarVehiculo(parqueo, placaStr.c_str());
                 Piso* pisoActual = parqueo;
                 Sleep(2000);
             }
@@ -530,7 +544,9 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
     }
 }
 
+//Pantalla de seleccion del numero de espacios para la simulacion
 void seleccionEspacios(int modo) {
+    //Se crea la pantalla
     if (!al_init()) {
         al_show_native_message_box(NULL, "Ventana Emergente", "Error", "No se puede inicializar Allegro", NULL, NULL);
         return;
@@ -561,9 +577,6 @@ void seleccionEspacios(int modo) {
     int mousey = 0;
     int a = 0;
     int inicio = 0;
-    const int maxFrame = 1;
-    int frameactual = 0;
-    int contadorDeFrames = 0;
     int Delay = 25;
 
     int cantidadEspacios = 1;
@@ -583,13 +596,7 @@ void seleccionEspacios(int modo) {
         {
             if (eventos.timer.source == timer1)
             {
-                if (contadorDeFrames++ >= Delay) {//Se declara un contador de frames que logra avanzar la animación del menú principal
-                    if (frameactual++ >= maxFrame) {
-                        frameactual = 0;
-                    }
-                    contadorDeFrames = 0;
-                }
-                //Se dibuja el fondo animado y las opciones del menú en el display
+                //Se crean las opciones y los botones para cambiar la cantidad
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 al_draw_text(fuente1, al_map_rgb(250, 250, 250), X / 2, (RY * (100.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Seleccione la cantidad de espacios:");
                 al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X/2-200, RY * 275/768, 100, 100, ALLEGRO_FLIP_HORIZONTAL);
@@ -601,33 +608,33 @@ void seleccionEspacios(int modo) {
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), X / 2, (RY * (530.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "SALIR");
             }
         }
-        //Si se posiciona el mouse en las coordenadas donde indica la opción jugar
+        //Si se posiciona el mouse en las coordenadas donde indica la opción disminuir
         if ((mousex >= X / 2 - 200 && mousex <= X / 2 - 100) && (mousey >= (RY * 250.0 / 768.0) && mousey <= (RY * 385.0 / 768.0))) {
             al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X / 2 - 200, RY * 260 / 768, 125, 125, ALLEGRO_FLIP_HORIZONTAL);
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
                     cantidadEspacios -= 1;
                 }
             }
         }
-        //Si el mouse se posiciona sobre DEMO se pinta de amarillo y si se hace click se lanza el juego pero en modo DEMO que significa máquina vs  máquina
+        //Si se posiciona el mouse en las coordenadas donde indica la opción aumentar
         if ((mousex >= X / 2 + 100 && mousex <= X / 2 + 200) && (mousey >= (RY * 250.0 / 768.0) && mousey <= (RY * 385.0 / 768.0))) {
             al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X / 2 + 100, RY * 260 / 768, 125, 125, 0);
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
                     cantidadEspacios += 1;
                 }
             }
         }
+        //Si se posiciona el mouse en las coordenadas donde indica la opción continuar
         if ((mousex >= X / 2 - 45 && mousex <= X / 2 + 45) && (mousey >= (RY * (415.0 / 768.0)) && mousey <= (RY * (450.0 / 768.0)))) {
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (420.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Continuar");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
+                    //Se elimina esta pantalla y se pasa a otra
                     al_destroy_display(pantalla);
                     simulacion(modo, 1, cantidadEspacios);
                     hecho = false;
@@ -635,7 +642,7 @@ void seleccionEspacios(int modo) {
             }
         }
         if ((mousex >= X / 2 - 45 && mousex <= X / 2 + 45) && (mousey >= (RY * (525.0 / 768.0)) && mousey <= (RY * (565.0 / 768.0)))) {
-            //Si se presiona la  opción de salir se sale de la cola de eventos y termina la aplicación
+            //Si se presiona la  opción de salir se sale de la cola de eventos y vuelve al menu
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (530.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "SALIR");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
@@ -648,7 +655,9 @@ void seleccionEspacios(int modo) {
     }
 }
 
+//Pantalla de seleccion del numero de plantas para la simulacion
 void seleccionPlantas() {
+    //Se crea la pantalla
     if (!al_init()) {
         al_show_native_message_box(NULL, "Ventana Emergente", "Error", "No se puede inicializar Allegro", NULL, NULL);
         return;
@@ -680,9 +689,6 @@ void seleccionPlantas() {
     int a = 0;
     int inicio = 0;
     bool modo;
-    const int maxFrame = 1;
-    int frameactual = 0;
-    int contadorDeFrames = 0;
     int Delay = 25;
     int alturaDeFrame = 1080;
     int AnchoDeFrame = 1920;
@@ -704,13 +710,7 @@ void seleccionPlantas() {
         {
             if (eventos.timer.source == timer1)
             {
-                if (contadorDeFrames++ >= Delay) {//Se declara un contador de frames que logra avanzar la animación del menú principal
-                    if (frameactual++ >= maxFrame) {
-                        frameactual = 0;
-                    }
-                    contadorDeFrames = 0;
-                }
-                //Se dibuja el fondo animado y las opciones del menú en el display
+                //Se crean las opciones y los botones para cambiar la cantidad
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 al_draw_text(fuente1, al_map_rgb(250, 250, 250), X / 2, (RY * (100.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Seleccione la cantidad de plantas:");
                 al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X / 2 - 200, RY * 275 / 768, 100, 100, ALLEGRO_FLIP_HORIZONTAL);
@@ -722,36 +722,35 @@ void seleccionPlantas() {
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), X / 2, (RY * (530.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "SALIR");
             }
         }
-        //Si se posiciona el mouse en las coordenadas donde indica la opción jugar
+        //Si se posiciona el mouse en las coordenadas donde indica la opción disminuir
         if ((mousex >= X / 2 - 200 && mousex <= X / 2 - 100) && (mousey >= (RY * 250.0 / 768.0) && mousey <= (RY * 385.0 / 768.0))) {
             al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X / 2 - 200, RY * 260 / 768, 125, 125, ALLEGRO_FLIP_HORIZONTAL);
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
-                    modo = true;
                     cantidadPlantas -= 1;
                 }
             }
         }
-        //Si el mouse se posiciona sobre DEMO se pinta de amarillo y si se hace click se lanza el juego pero en modo DEMO que significa máquina vs  máquina
+        //Si se posiciona el mouse en las coordenadas donde indica la opción aumentar
         if ((mousex >= X / 2 + 100 && mousex <= X / 2 + 200) && (mousey >= (RY * 250.0 / 768.0) && mousey <= (RY * 385.0 / 768.0))) {
             al_draw_scaled_bitmap(flecha1, 0, 0, 4623, 4623, X / 2 + 100, RY * 260 / 768, 125, 125, 0);
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
                     modo = true;
                     cantidadPlantas += 1;
                 }
             }
         }
+        //Si se posiciona el mouse en las coordenadas donde indica la opción continuar
         if ((mousex >= X / 2 - 45 && mousex <= X / 2 + 45) && (mousey >= (RY * (415.0 / 768.0)) && mousey <= (RY * (450.0 / 768.0)))) {
-            //Si se presiona la  opción de salir se sale de la cola de eventos y termina la aplicación
+            
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (420.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Continuar");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
+                    //Si se da clic se elimina esta pantalla y se pasa a otra
                     al_destroy_display(pantalla);
                     simulacion(3, cantidadPlantas);
                     hecho = false;
@@ -759,7 +758,7 @@ void seleccionPlantas() {
             }
         }
         if ((mousex >= X / 2 - 45 && mousex <= X / 2 + 45) && (mousey >= (RY * (525.0 / 768.0)) && mousey <= (RY * (565.0 / 768.0)))) {
-            //Si se presiona la  opción de salir se sale de la cola de eventos y termina la aplicación
+            //Si se presiona la  opción de salir se sale de la cola de eventos y vuelve al menú
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (530.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "SALIR");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
@@ -774,9 +773,8 @@ void seleccionPlantas() {
 
 int main() {
     
-    int opcion;
     
-    
+    //Se inicializa allegro
     if (!al_init()) {
         al_show_native_message_box(NULL, "Ventana Emergente", "Error", "No se puede inicializar Allegro", NULL, NULL);
         return -1;
@@ -815,9 +813,6 @@ int main() {
     int mousey = 0;
     int a = 0;
     int inicio = 0;
-    const int maxFrame = 1;
-    int frameactual = 0;
-    int contadorDeFrames = 0;
     int Delay = 25;
     int alturaDeFrame = 1080;
     int AnchoDeFrame = 1920;
@@ -837,13 +832,7 @@ int main() {
         {
             if (eventos.timer.source == timer)
             {
-                if (contadorDeFrames++ >= Delay) {//Se declara un contador de frames que logra avanzar la animación del menú principal
-                    if (frameactual++ >= maxFrame) {
-                        frameactual = 0;
-                    }
-                    contadorDeFrames = 0;
-                }
-                //Se dibuja el fondo animado y las opciones del menú en el display
+                //Se dibujan las opciones
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 al_draw_text(fuente1, al_map_rgb(250, 250, 250), X / 2, (RY * (100.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Simulador de Parking");
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), X / 2, (RY * (250.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Simulador 1 solo piso en 1 planta");
@@ -852,13 +841,13 @@ int main() {
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), X / 2, (RY * (530.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "SALIR");
             }
         }
-        //Si se posiciona el mouse en las coordenadas donde indica la opción jugar
+        //Si se posiciona el mouse en las coordenadas donde indica la primera opción
         if ((mousex >= X / 2 - 150 && mousex <= X / 2 + 150) && (mousey >= (RY * 245.0 / 768.0) && mousey <= (RY * 285.0 / 768.0))) {
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (250.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Simulador 1 solo piso en 1 planta");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
+                    //Si se presiona el click del mouse se pasa a la siguiente pantalla
                     al_destroy_display(pantalla);
                     seleccionEspacios(1);
                     main();//Se vuelve a lanzar el menú si se sale del juego
@@ -866,13 +855,13 @@ int main() {
                 }
             }
         }
-        //Si el mouse se posiciona sobre DEMO se pinta de amarillo y si se hace click se lanza el juego pero en modo DEMO que significa máquina vs  máquina
+        //Si el mouse se posiciona sobre la segunda opcion
         if ((mousex >= X / 2 - 135 && mousex <= X / 2 + 135) && (mousey >= (RY * 315.0 / 768.0) && mousey <= (RY * 365.0 / 768.0))) {
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, (RY * (320.0 / 768.0)), ALLEGRO_ALIGN_CENTRE, "Simulador 2 pisos en 1 planta");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
+                    //Si se presiona el click del mouse se pasa a la siguiente pantalla
                     al_destroy_display(pantalla);
                     seleccionEspacios(2);
                     main();//Se vuelve a lanzar el menú si se sale del juego
@@ -880,13 +869,13 @@ int main() {
                 }
             }
         }
-        //Si se posiciona el mouse sobre resultados este se tinta de amarillo y si se hace click lanza el menu de resultados donde se pueden ver todas las partidas anteriores
+        //Si se posiciona el mouse sobre la tercera opción
         if ((mousex >= X / 2 - 230 && mousex <= X / 2 + 230) && (mousey >= (RY * (385.0 / 768.0)) && mousey <= (RY * (425.0 / 768.0)))) {
             al_draw_text(fuente2, al_map_rgb(250, 250, 20), X / 2, RY * (390.0 / 768.0), ALLEGRO_ALIGN_CENTRE, "Simulador n plantas 2 estacionamientos por planta");
             if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
             {
                 if (eventos.mouse.button & 1) {
-                    //Si se presiona el click del mouse se inicia el juego y se indican las vidas totales y el nivel, si el juego termina se avanza de nivel hasta que se pierdan las vidas y el modo determina si es maquina vs maquina o jugador vs maquina
+                    //Si se presiona el click del mouse se pasa a la siguiente pantalla
                     al_destroy_display(pantalla);
                     seleccionPlantas();
                     main();//Se vuelve a lanzar el menú si se sale del juego
@@ -908,106 +897,6 @@ int main() {
         al_flip_display();
     }
 
-   /* do {
-        cout << "\nMenu:" << endl;
-        cout << "1. Crear pisos" << endl;
-        cout << "2. Sacar un vehiculo" << endl;
-        cout << "3. Buscar un vehiculo" << endl;
-        cout << "4. Ver ultimo vehiculo" << endl;
-        cout << "5. Cantidad de vehiculos" << endl;
-        cout << "6. Espacios vacios" << endl;
-        cout << "7. Agregar vehiculo" << endl;
-        cout << "8. Mostrar tipos de vehiculos" << endl;
-        cout << "0. Salir" << endl;
-        cout << "Seleccione una opcion: ";
-        cin >> opcion;
-
-        switch (opcion) {
-        case 1: {
-            int pisosMotosBicicletas, pisosAutos4x4, pisosCamiones;
-            cout << "Ingrese la cantidad de pisos para motos y bicicletas: ";
-            cin >> pisosMotosBicicletas;
-            cout << "Ingrese la cantidad de pisos para autos y 4x4: ";
-            cin >> pisosAutos4x4;
-            cout << "Ingrese la cantidad de pisos para camiones: ";
-            cin >> pisosCamiones;
-            parqueo = CrearParqueo(pisosMotosBicicletas, pisosAutos4x4, pisosCamiones);
-            cout << "Pisos creados correctamente" << endl;
-            break;
-        }
-        case 2: {
-            char identificacion[20];
-            cout << "Ingrese la identificacion del vehiculo a sacar: ";
-            cin >> identificacion;
-            SacarVehiculo(parqueo, identificacion);
-            break;
-        }
-        case 3: {
-            char identificacion[20];
-            cout << "Ingrese la identificacion del vehiculo a buscar: ";
-            cin >> identificacion;
-
-            // Buscar el vehículo en cada piso
-            Piso* pisoActual = parqueo;
-            while (pisoActual != nullptr) {
-                T_Vehiculo* vehiculoEncontrado = BuscarVehiculo(pisoActual->listaVehiculos, identificacion);
-                if (vehiculoEncontrado != nullptr) {
-                    cout << "Vehiculo encontrado:" << endl;
-                    cout << "Identificacion: " << vehiculoEncontrado->identificacion << endl;
-                    cout << "Peso: " << vehiculoEncontrado->peso << endl;
-                    cout << "Tamano: " << vehiculoEncontrado->tamano << endl;
-                    cout << "Tipo: " << vehiculoEncontrado->tipo << endl;
-                    return 0;
-                }
-                pisoActual = pisoActual->siguiente;
-            }
-            cout << "No se encontro" << endl;
-            break;
-        }
-        case 4:
-            ObtenerUltimoVehiculo();
-            break;
-        case 5:
-            ObtenerCantidadVehiculos();
-            break;
-        case 6:
-            ObtenerEspaciosVacios();
-            break;
-        case 7: {
-            if (parqueo == nullptr) {
-                cout << "Primero debe crear los pisos del parqueo." << endl;
-            }
-            else {
-                char identificacion[20];
-                char tipo[20];
-                float peso, tamano;
-
-                cout << "Ingrese la identificacion del vehiculo: ";
-                cin >> identificacion;
-                cout << "Ingrese el tipo del vehiculo: ";
-                cin >> tipo;
-                cout << "Ingrese el tamano del vehiculo: ";
-                cin >> tamano;
-                cout << "Ingrese el peso del vehiculo: ";
-                cin >> peso;
-
-                AgregarVehiculo(parqueo, tipo, identificacion, peso, tamano);
-                cout << "Vehiculo agregado exitosamente." << endl;
-            }
-            break;
-        }
-        case 8: {
-            MostrarTiposVehiculos();
-            break;
-        }
-        case 0:
-            cout << "Saliendo del programa..." << endl;
-            break;
-        default:
-            cout << "La opcion no es valida" << endl;
-            break;
-        }
-    } while (opcion != 0);*/
 
     return 0;
 }
