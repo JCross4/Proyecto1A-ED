@@ -16,6 +16,7 @@
 #include <string>
 #define FPS 60.0
 
+
 using namespace std;
 
 struct T_Vehiculo {
@@ -335,14 +336,14 @@ void dibujarParqueo(int modo, int rx, int ry, int espacios, int plantas) {
     
 }
 
-void dibujarVehiculos(Piso* parqueo, int modo, int rx, int ry, int espacios, int plantas) {
+void dibujarVehiculos(Piso* parqueo, int modo, int rx, int ry, int espacios, int plantas, ALLEGRO_BITMAP* carro) {
     
     if (parqueo->listaVehiculos == NULL) {
         return;
     }
 
     float x1 = 1, x2 = x1 + rx, y1 = 60, y2 = y1 + ry, anchoCarro = rx, altoCarro = ry;
-    ALLEGRO_BITMAP* carro; carro = al_load_bitmap("carro.png");
+    
     T_Vehiculo* carroActual = parqueo->listaVehiculos;
     int i = 0, j = 0;
 
@@ -443,6 +444,8 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
     ALLEGRO_FONT* fuente2;
     fuente2 = al_load_font("arial.ttf", 20, NULL);
     ALLEGRO_BITMAP* flecha1; ALLEGRO_BITMAP* celda;
+    ALLEGRO_BITMAP* carro;
+    carro = al_load_bitmap("carro.png");
     flecha1 = al_load_bitmap("arrowicon.png");
     celda = al_load_bitmap("Cuadrado.png");
 
@@ -481,7 +484,7 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
                 //Se dibuja el fondo animado y las opciones del menú en el display
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 dibujarParqueo(modo, RX - 300, RY - 200, espacios, plantas);
-                dibujarVehiculos(parqueo, modo, RX - 300, RY - 200, espacios, plantas);
+                dibujarVehiculos(parqueo, modo, RX - 300, RY - 200, espacios, plantas, carro);
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), X / 2, (RY * 725.0 / 768.0), ALLEGRO_ALIGN_CENTRE, "SALIR");
             }
         }
@@ -509,21 +512,9 @@ void simulacion(int modo, int plantas = 1, int espacios=1) {
                 Piso* pisoActual = parqueo;
                 Sleep(2000);
                
-                while (pisoActual != nullptr) {
-                    
-                    T_Vehiculo* vehiculoEncontrado = BuscarVehiculo(pisoActual->listaVehiculos, placaStr.c_str());
-                    if (vehiculoEncontrado != nullptr) {
-                        cout << "Vehiculo encontrado:" << endl;
-                        cout << "Identificacion: " << vehiculoEncontrado->identificacion << endl;
-                        cout << "Peso: " << vehiculoEncontrado->peso << endl;
-                        cout << "Tamano: " << vehiculoEncontrado->tamano << endl;
-                        cout << "Tipo: " << vehiculoEncontrado->tipo << endl;
-                        break;
-                    }
-                    pisoActual = pisoActual->siguiente;
-                }
             }
             if (eventos.keyboard.keycode == ALLEGRO_KEY_S) {
+                srand(time(NULL));
                 int placa = rand() % 9999 + 1000;
                 string placaStr = to_string(placa);
                 al_draw_text(fuente2, al_map_rgb(250, 250, 250), 950, 100, 0, "Se solicita sacar el carro");
